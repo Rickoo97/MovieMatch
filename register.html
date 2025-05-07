@@ -1,0 +1,40 @@
+<!-- register.html -->
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <title>Registreren - MovieMatch</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@supabase/supabase-js"></script>
+</head>
+<body class="bg-black text-white min-h-screen flex items-center justify-center p-6">
+  <div class="bg-gray-900 p-8 rounded-lg shadow max-w-md w-full">
+    <h1 class="text-2xl font-bold mb-6 text-red-500 text-center">Maak een account aan</h1>
+    <form id="registerForm" class="space-y-4">
+      <input type="email" id="email" placeholder="E-mailadres" required class="w-full p-3 rounded bg-gray-800 text-white border border-gray-700">
+      <input type="password" id="password" placeholder="Wachtwoord" required class="w-full p-3 rounded bg-gray-800 text-white border border-gray-700">
+      <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded">Registreren</button>
+    </form>
+    <p class="text-sm text-center text-gray-400 mt-4">Heb je al een account? <a href="login.html" class="text-red-400 hover:underline">Log hier in</a></p>
+  </div>
+
+  <script>
+    const client = supabase.createClient('https://kumewugdgmgmqilniefd.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1bWV3dWdkZ21nbXFpbG5pZWZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY2MTI5NTMsImV4cCI6MjA2MjE4ODk1M30.dZgYY6kzf6JODAU5TG-bhYOkIZTSyM2XYV7LBNE5VEI');
+
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+
+  const { error, data } = await client.auth.signUp({ email, password });
+
+  if (error) {
+    alert('Registratie mislukt: ' + error.message);
+  } else {
+    alert('🎉 Registratie gelukt! Controleer je e-mail om je account te bevestigen.');
+    window.location.href = 'login.html';
+  }
+});
+  </script>
+</body>
+</html>

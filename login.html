@@ -1,0 +1,40 @@
+<!-- login.html -->
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <title>Inloggen - MovieMatch</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@supabase/supabase-js"></script>
+</head>
+<body class="bg-black text-white min-h-screen flex items-center justify-center p-6">
+  <div class="bg-gray-900 p-8 rounded-lg shadow max-w-md w-full">
+    <h1 class="text-2xl font-bold mb-6 text-red-500 text-center">Inloggen op je account</h1>
+    <form id="loginForm" class="space-y-4">
+      <input type="email" id="email" placeholder="E-mailadres" required class="w-full p-3 rounded bg-gray-800 text-white border border-gray-700">
+      <input type="password" id="password" placeholder="Wachtwoord" required class="w-full p-3 rounded bg-gray-800 text-white border border-gray-700">
+      <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded">Inloggen</button>
+    </form>
+    <p class="text-sm text-center text-gray-400 mt-4">Nog geen account? <a href="register.html" class="text-red-400 hover:underline">Registreer hier</a></p>
+  </div>
+
+  <script>
+    const supabase = supabase.createClient('https://kumewugdgmgmqilniefd.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1bWV3dWdkZ21nbXFpbG5pZWZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY2MTI5NTMsImV4cCI6MjA2MjE4ODk1M30.dZgYY6kzf6JODAU5TG-bhYOkIZTSyM2XYV7LBNE5VEI');
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      const { error, session } = await supabase.auth.signInWithPassword({ email, password });
+
+      if (error) {
+        alert('Inloggen mislukt: ' + error.message);
+      } else {
+        alert('Welkom terug!');
+        window.location.href = 'index.html'; // verander dit eventueel naar een dashboard
+      }
+    });
+  </script>
+</body>
+</html>
