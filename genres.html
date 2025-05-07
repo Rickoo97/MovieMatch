@@ -1,3 +1,4 @@
+<!-- genres.html -->
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -5,62 +6,58 @@
   <title>Kies je genres</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 text-gray-900 min-h-screen">
+<body class="bg-black text-white min-h-screen font-sans">
 
-  <!-- Sticky Navbar -->
-  <nav class="sticky top-0 bg-white shadow-md p-4 flex justify-start items-center z-50">
-    <a href="index.html" class="text-blue-600 hover:underline">← Terug naar startpagina</a>
+  <nav class="sticky top-0 bg-black border-b border-gray-700 p-4 flex justify-start items-center z-50">
+    <a href="index.html" class="text-red-600 hover:underline text-sm sm:text-base font-semibold">← Terug naar startpagina</a>
   </nav>
 
-  <main class="max-w-2xl mx-auto mt-10 p-6 text-center">
-    <h1 class="text-3xl font-bold mb-6">Kies 1 tot 3 genres</h1>
-    <div id="genres" class="flex flex-wrap justify-center gap-4 mb-6"></div>
+  <main class="max-w-4xl mx-auto mt-10 px-4 sm:px-6 text-center">
+    <h1 class="text-3xl sm:text-4xl font-extrabold mb-6 text-red-600">Kies 1 tot 3 genres</h1>
+    <div id="genres" class="flex flex-wrap justify-center gap-4 mb-8"></div>
     <button id="zoekBtn" disabled
-            class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-800 transition disabled:opacity-50">
+            class="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700 transition disabled:opacity-50 font-semibold">
       Zoek wat films uit voor mij
     </button>
   </main>
 
   <script>
-    const genres = [
-      { id: 28, name: "Actie" },
-      { id: 35, name: "Komedie" },
-      { id: 18, name: "Drama" },
-      { id: 27, name: "Horror" },
-      { id: 10749, name: "Romantiek" },
-      { id: 878, name: "Sciencefiction" },
-      { id: 16, name: "Animatie" },
-      { id: 53, name: "Thriller" },
-      { id: 12, name: "Avontuur" },
-      { id: 99, name: "Documentaire" }
-    ];
-
+    const apiKey = "4b06a3c9e64051404e6def4268bcf905"; // vervang dit met jouw TMDB API key
     const geselecteerdeGenres = new Set();
     const container = document.getElementById("genres");
     const zoekBtn = document.getElementById("zoekBtn");
 
-    genres.forEach(genre => {
-      const btn = document.createElement("button");
-      btn.textContent = genre.name;
-      btn.className = "px-4 py-2 border rounded bg-white hover:bg-blue-100 transition";
-      btn.onclick = () => {
-        if (geselecteerdeGenres.has(genre.id)) {
-          geselecteerdeGenres.delete(genre.id);
-          btn.classList.remove("bg-green-300");
-        } else if (geselecteerdeGenres.size < 3) {
-          geselecteerdeGenres.add(genre.id);
-          btn.classList.add("bg-green-300");
-        }
-        zoekBtn.disabled = geselecteerdeGenres.size === 0;
-      };
-      container.appendChild(btn);
-    });
+    async function laadGenres() {
+      const res = await fetch(`https://api.themoviedb.org/3/genre/movie/list?api_key=${apiKey}&language=nl-NL`);
+      const data = await res.json();
+
+      data.genres.forEach(genre => {
+        const btn = document.createElement("button");
+        btn.textContent = genre.name;
+        btn.className = "px-4 py-2 border border-gray-600 rounded bg-gray-800 hover:bg-red-600 transition text-sm sm:text-base text-white";
+        btn.onclick = () => {
+          if (geselecteerdeGenres.has(genre.id)) {
+            geselecteerdeGenres.delete(genre.id);
+            btn.classList.remove("bg-red-500");
+            btn.classList.add("bg-gray-800");
+          } else if (geselecteerdeGenres.size < 3) {
+            geselecteerdeGenres.add(genre.id);
+            btn.classList.remove("bg-gray-800");
+            btn.classList.add("bg-red-500");
+          }
+          zoekBtn.disabled = geselecteerdeGenres.size === 0;
+        };
+        container.appendChild(btn);
+      });
+    }
 
     zoekBtn.onclick = () => {
       const genreIds = Array.from(geselecteerdeGenres);
       localStorage.setItem("geselecteerdeGenres", JSON.stringify(genreIds));
       window.location.href = "films.html";
     };
+
+    laadGenres();
   </script>
 </body>
 </html>
