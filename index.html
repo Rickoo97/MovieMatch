@@ -1,0 +1,37 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <title>MovieMatch</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-900 min-h-screen">
+
+  <!-- Sticky Navbar -->
+  <nav class="sticky top-0 bg-white shadow-md p-4 flex justify-between items-center z-50">
+    <a href="#top" class="text-2xl font-bold text-blue-600">MovieMatch</a>
+    <a href="#uitleg" class="text-blue-600 hover:underline">Hoe werkt het</a>
+  </nav>
+
+  <!-- Startpagina inhoud -->
+  <main id="top" class="text-center mt-20 p-6 flex flex-col items-center">
+    <h1 class="text-4xl font-bold mb-4">Welkom bij MovieMatch!</h1>
+    <p class="text-lg mb-6 max-w-xl">Kies jouw favoriete genres en krijg filmsuggesties die bij jou passen!</p>
+    <button class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-800 transition"
+            onclick="window.location.href='genres.html'">
+      Start
+    </button>
+  </main>
+
+  <!-- Hoe werkt het sectie -->
+  <section id="uitleg" class="mt-32 p-6 bg-white shadow-inner max-w-3xl mx-auto rounded-lg">
+    <h2 class="text-2xl font-semibold mb-3">Hoe werkt het?</h2>
+    <p class="text-gray-700 text-base">
+      Je kiest tussen 1 en 3 genres. Daarna zoeken wij automatisch 5 films die bij jouw smaak passen.
+      Je kunt daarna opnieuw shufflen als je nieuwe suggesties wilt.
+    </p>
+  </section>
+
+</body>
+</html>

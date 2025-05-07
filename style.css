@@ -1,0 +1,98 @@
+/* style.css */
+
+body {
+    font-family: sans-serif;
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+  }
+  
+  h1 {
+    text-align: center;
+  }
+  
+  #shuffleBtn {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  
+  #shuffleBtn:hover {
+    background-color: #0056b3;
+  }
+  
+  #films {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+  }
+  
+  .film {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .film img {
+    width: 100%;
+    object-fit: cover;
+  }
+  
+  .film h3 {
+    margin: 10px;
+    font-size: 18px;
+  }
+  
+  .film p {
+    margin: 10px;
+    font-size: 14px;
+  }
+/* Algemene layout voor alle pagina’s */
+body {
+    font-family: sans-serif;
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+    background-color: #fdfdfd;
+  }
+  
+  button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Genre-selectie specifieke stijlen */
+  .genre-btn {
+    display: inline-block;
+    margin: 5px;
+    padding: 10px;
+    border: 1px solid gray;
+    border-radius: 8px;
+    background-color: #eee;
+  }
+  
+  .genre-btn.selected {
+    background-color: lightgreen;
+  }
+    
