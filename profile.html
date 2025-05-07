@@ -1,0 +1,115 @@
+<!-- profile.html -->
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <title>Profiel - MovieMatch</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@supabase/supabase-js"></script>
+</head>
+<body class="bg-black text-white min-h-screen flex flex-col items-center justify-start pt-10 p-6">
+  <h1 id="welcomeMessage" class="text-2xl font-bold text-red-500 text-center mb-6">Welkom op je profiel</h1>
+
+  <div class="bg-gray-900 p-8 rounded-lg shadow max-w-md w-full">
+    <h2 class="text-xl font-semibold mb-4 text-white text-center">Profielgegevens</h2>
+    <form id="profileForm" class="space-y-4" enctype="multipart/form-data">
+      <input type="text" id="username" placeholder="Gebruikersnaam" required class="w-full p-3 rounded bg-gray-800 text-white border border-gray-700">
+      <textarea id="bio" placeholder="Vertel iets over jezelf..." class="w-full p-3 rounded bg-gray-800 text-white border border-gray-700"></textarea>
+      <input type="file" id="avatar" accept="image/*" class="w-full p-3 rounded bg-gray-800 text-white border border-gray-700">
+      <img id="preview" src="" alt="Profielfoto" class="w-24 h-24 rounded-full mx-auto hidden">
+      <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded">Profiel opslaan</button>
+    </form>
+    <p id="feedback" class="text-green-400 text-center mt-4"></p>
+  </div>
+
+  <script>
+    const client = supabase.createClient(
+      'https://kumewugdgmgmqilniefd.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1bWV3dWdkZ21nbXFpbG5pZWZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY2MTI5NTMsImV4cCI6MjA2MjE4ODk1M30.dZgYY6kzf6JODAU5TG-bhYOkIZTSyM2XYV7LBNE5VEI'
+    );
+
+    const usernameInput = document.getElementById('username');
+    const bioInput = document.getElementById('bio');
+    const avatarInput = document.getElementById('avatar');
+    const preview = document.getElementById('preview');
+    const feedback = document.getElementById('feedback');
+    const welcomeMessage = document.getElementById('welcomeMessage');
+
+    let currentUser;
+
+    async function laadProfiel() {
+      const { data: { user } } = await client.auth.getUser();
+      currentUser = user;
+      if (!user) {
+        alert("Je moet ingelogd zijn om je profiel te bekijken.");
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const { data, error } = await client
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (data) {
+        usernameInput.value = data.username || '';
+        bioInput.value = data.bio || '';
+        welcomeMessage.textContent = data.username
+          ? `Welkom ${data.username}!`
+          : 'Welkom op je profiel';
+        if (data.avatar_url) {
+          preview.src = data.avatar_url;
+          preview.classList.remove('hidden');
+        }
+      }
+    }
+
+    document.getElementById('profileForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const avatarFile = avatarInput.files[0];
+      let avatar_url = null;
+
+      if (avatarFile) {
+        const fileExt = avatarFile.name.split('.').pop();
+        const filePath = `${currentUser.id}/avatar.${fileExt}`;
+
+        const { error: uploadError } = await client.storage
+          .from('avatars')
+          .upload(filePath, avatarFile, { upsert: true });
+
+        if (!uploadError) {
+          const { data: publicURLData } = client.storage
+            .from('avatars')
+            .getPublicUrl(filePath);
+          avatar_url = publicURLData.publicUrl;
+        }
+      }
+
+      const updates = {
+        id: currentUser.id,
+        username: usernameInput.value,
+        bio: bioInput.value,
+        ...(avatar_url && { avatar_url }),
+      };
+
+      const { error } = await client.from('profiles').upsert(updates);
+
+      if (error) {
+        feedback.textContent = 'Er is iets misgegaan: ' + error.message;
+        feedback.classList.replace('text-green-400', 'text-red-400');
+      } else {
+        feedback.textContent = '✅ Profiel opgeslagen!';
+        feedback.classList.replace('text-red-400', 'text-green-400');
+        welcomeMessage.textContent = `Welkom ${updates.username}!`;
+        if (avatar_url) {
+          preview.src = avatar_url;
+          preview.classList.remove('hidden');
+        }
+      }
+    });
+
+    laadProfiel();
+  </script>
+</body>
+</html>

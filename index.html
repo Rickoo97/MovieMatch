@@ -5,6 +5,7 @@
   <meta charset="UTF-8" />
   <title>MovieMatch</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@supabase/supabase-js"></script>
 </head>
 <body class="bg-black text-white min-h-screen font-sans">
 
@@ -13,14 +14,17 @@
     <a href="#top" class="text-xl sm:text-2xl font-bold text-red-600">MovieMatch</a>
     <div class="flex items-center gap-4">
       <a href="#uitleg" class="text-sm sm:text-base text-red-500 hover:underline">Hoe werkt het</a>
-      <span id="userStatus" class="text-sm text-gray-300"></span>
+      <a href="profile.html" id="profileLink" class="flex items-center gap-2 hidden">
+        <img id="navAvatar" src="" alt="Profielfoto" class="w-8 h-8 rounded-full hidden">
+        <span id="navUsername" class="text-sm sm:text-base text-red-400 hover:underline"></span>
+      </a>
       <button id="authBtn" class="text-red-400 hover:underline text-sm" style="display: none;"></button>
     </div>
   </nav>
 
   <!-- Startpagina inhoud -->
   <main id="top" class="text-center mt-20 px-4 sm:px-6 md:px-10 flex flex-col items-center">
-    <h1 class="text-4xl font-extrabold mb-4 text-red-600">Welkom bij MovieMatch!</h1>
+    <h1 id="welcomeText" class="text-4xl font-extrabold mb-4 text-red-600">Welkom bij MovieMatch!</h1>
     <p class="text-lg mb-6 max-w-xl text-white">Kies jouw favoriete genres en krijg filmsuggesties die bij jou passen!</p>
     <button class="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700 transition font-semibold"
             onclick="window.location.href='genres.html'">
@@ -47,37 +51,62 @@
     </div>
   </section>
 
-  <script src="https://unpkg.com/@supabase/supabase-js"></script>
-<script>
-  const client = supabase.createClient(
-    'https://kumewugdgmgmqilniefd.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1bWV3dWdkZ21nbXFpbG5pZWZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY2MTI5NTMsImV4cCI6MjA2MjE4ODk1M30.dZgYY6kzf6JODAU5TG-bhYOkIZTSyM2XYV7LBNE5VEI'
-  );
+  <script>
+    const client = supabase.createClient(
+      'https://kumewugdgmgmqilniefd.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1bWV3dWdkZ21nbXFpbG5pZWZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY2MTI5NTMsImV4cCI6MjA2MjE4ODk1M30.dZgYY6kzf6JODAU5TG-bhYOkIZTSyM2XYV7LBNE5VEI'
+    );
 
-  const userStatus = document.getElementById('userStatus');
-  const authBtn = document.getElementById('authBtn');
+    const authBtn = document.getElementById('authBtn');
+    const profileLink = document.getElementById('profileLink');
+    const navUsername = document.getElementById('navUsername');
+    const navAvatar = document.getElementById('navAvatar');
+    const welcomeText = document.getElementById('welcomeText');
 
-  async function updateAuthUI() {
-    const { data: { user }, error } = await client.auth.getUser();
-    console.log("Gebruiker:", user);
+    async function updateAuthUI() {
+      const { data: { user }, error } = await client.auth.getUser();
+      if (user) {
+        const { data: profiel } = await client
+          .from('profiles')
+          .select('username, avatar_url')
+          .eq('id', user.id)
+          .single();
 
-    if (user) {
-      userStatus.textContent = `Ingelogd als ${user.email}`;
-      authBtn.textContent = 'Uitloggen';
-      authBtn.style.display = 'inline-block';
-      authBtn.onclick = async () => {
-        await client.auth.signOut();
-        location.reload();
-      };
-    } else {
-      userStatus.textContent = 'Niet ingelogd';
-      authBtn.textContent = 'Inloggen';
-      authBtn.style.display = 'inline-block';
-      authBtn.onclick = () => window.location.href = 'login.html';
+        profileLink.classList.remove('hidden');
+        authBtn.textContent = 'Uitloggen';
+        authBtn.style.display = 'inline-block';
+        authBtn.onclick = async () => {
+          await client.auth.signOut();
+          location.reload();
+        };
+
+        if (profiel?.username) {
+          navUsername.textContent = profiel.username;
+        } else {
+          navUsername.textContent = 'Profiel';
+        }
+
+        if (profiel?.avatar_url) {
+          navAvatar.src = profiel.avatar_url;
+          navAvatar.classList.remove('hidden');
+        } else {
+          navAvatar.classList.add('hidden');
+        }
+
+        welcomeText.textContent = profiel?.username
+          ? `Welkom ${profiel.username}!`
+          : 'Welkom bij MovieMatch!';
+      } else {
+        authBtn.textContent = 'Inloggen';
+        authBtn.style.display = 'inline-block';
+        profileLink.classList.add('hidden');
+        navUsername.textContent = '';
+        navAvatar.classList.add('hidden');
+        authBtn.onclick = () => window.location.href = 'login.html';
+      }
     }
-  }
 
-  updateAuthUI();
-</script>  
+    updateAuthUI();
+  </script>
 </body>
 </html>
