@@ -13,7 +13,7 @@
     <a href="#top" class="text-2xl font-extrabold text-red-500 tracking-wide">MovieMatch</a>
     <div class="flex gap-4 items-center">
       <a href="#uitleg" class="text-red-400 hover:underline text-sm">Hoe werkt het</a>
-      <span id="userStatus" class="text-sm text-gray-300"></span>
+      <a id="userStatus" class="text-sm text-gray-300 cursor-pointer hover:underline"></a>
       <button id="authBtn" class="text-red-400 hover:underline text-sm hidden"></button>
     </div>
   </nav>
@@ -60,7 +60,8 @@
     async function updateAuthUI() {
       const { data: { user } } = await client.auth.getUser();
       if (user) {
-        userStatus.textContent = `Ingelogd als ${user.email}`;
+        userStatus.textContent = `${user.email}`;
+        userStatus.onclick = () => window.location.href = 'profile.html';
         authBtn.textContent = 'Uitloggen';
         authBtn.classList.remove('hidden');
         authBtn.onclick = async () => {
