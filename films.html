@@ -39,71 +39,54 @@
   </div>
 
   <script>
-    const apiKey = "4b06a3c9e64051404e6def4268bcf905";
     const geselecteerdeGenres = JSON.parse(localStorage.getItem("geselecteerdeGenres")) || [];
     const filmsContainer = document.getElementById("films");
     const trailerModal = document.getElementById("trailerModal");
     const trailerFrame = document.getElementById("trailerFrame");
-
+  
     async function haalStreamPlatformsOp(filmId) {
-      const url = `https://api.themoviedb.org/3/movie/${filmId}/watch/providers?api_key=${apiKey}`;
-      const response = await fetch(url);
+      const response = await fetch(`/api/get-streams?id=${filmId}`);
       const data = await response.json();
-      const providers = data.results?.NL?.flatrate || [];
-      return providers.length > 0
-        ? providers.map(p => p.provider_name).join(", ")
-        : "Niet beschikbaar op streamingplatforms";
+      return data.platforms;
     }
-
+  
     async function haalTrailerUrl(filmId) {
-      let url = `https://api.themoviedb.org/3/movie/${filmId}/videos?api_key=${apiKey}&language=nl-NL`;
-      let response = await fetch(url);
-      let data = await response.json();
-      let trailer = data.results.find(v => v.type === "Trailer" && v.site === "YouTube" && v.official);
-
-      if (!trailer) {
-        url = `https://api.themoviedb.org/3/movie/${filmId}/videos?api_key=${apiKey}&language=en-US`;
-        response = await fetch(url);
-        data = await response.json();
-        trailer = data.results.find(v => v.type === "Trailer" && v.site === "YouTube" && v.official);
-      }
-
-      return trailer ? `https://www.youtube.com/embed/${trailer.key}` : null;
+      const response = await fetch(`/api/get-trailer?id=${filmId}`);
+      const data = await response.json();
+      return data.url;
     }
-
+  
     async function haalFilmsOp() {
       filmsContainer.innerHTML = "";
-
+  
       const genreQuery = geselecteerdeGenres.join(",");
-      const url = `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&with_genres=${genreQuery}&language=nl-NL`;
-
-      const response = await fetch(url);
+      const response = await fetch(`/api/get-movies?genres=${genreQuery}`);
       const data = await response.json();
-
+  
       const films = data.results.sort(() => 0.5 - Math.random()).slice(0, 3);
-
+  
       for (const film of films) {
         const streamInfo = await haalStreamPlatformsOp(film.id);
         const trailerUrl = await haalTrailerUrl(film.id);
-
+  
         const div = document.createElement("div");
         div.className = "bg-gray-800 rounded-lg shadow-lg p-4 flex flex-col hover:shadow-xl transition";
-
+  
         const poster = film.poster_path
           ? `<img src="https://image.tmdb.org/t/p/w500${film.poster_path}" alt="${film.title}" class="rounded mb-4 cursor-pointer hover:brightness-110 transition" onclick="toonTrailer('${trailerUrl}')">`
           : "<p>Geen afbeelding beschikbaar</p>";
-
+  
         div.innerHTML = `
           ${poster}
           <h3 class="text-xl font-semibold mb-2 text-red-400">${film.title}</h3>
           <p class="text-sm mb-2 text-gray-300">${film.overview || "Geen beschrijving beschikbaar."}</p>
           <p class="text-sm text-gray-400"><strong>Beschikbaar op:</strong> ${streamInfo}</p>
         `;
-
+  
         filmsContainer.appendChild(div);
       }
     }
-
+  
     function toonTrailer(url) {
       if (url) {
         trailerFrame.src = url;
@@ -112,9 +95,9 @@
         alert("Geen trailer beschikbaar.");
       }
     }
-
+  
     document.getElementById("shuffleBtn").addEventListener("click", haalFilmsOp);
     haalFilmsOp();
-  </script>
+  </script>  
 </body>
 </html>
