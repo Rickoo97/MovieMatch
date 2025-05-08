@@ -57,7 +57,7 @@
   <!-- Supabase Auth script -->
   <script src="https://unpkg.com/@supabase/supabase-js"></script>
   <script>
-    const client = supabase.createClient(
+    const supabase = supabase.createClient(
       'https://kumewugdgmgmqilniefd.supabase.co',
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1bWV3dWdkZ21nbXFpbG5pZWZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY2MTI5NTMsImV4cCI6MjA2MjE4ODk1M30.dZgYY6kzf6JODAU5TG-bhYOkIZTSyM2XYV7LBNE5VEI'
     );
@@ -83,7 +83,7 @@
         authBtn.textContent = 'Uitloggen';
         authBtn.classList.remove('hidden');
         authBtn.onclick = async () => {
-          await client.auth.signOut();
+          await supabase.auth.signOut();
           location.reload();
         };
       } else {
