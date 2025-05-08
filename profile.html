@@ -88,7 +88,9 @@
           .from('avatars')
           .upload(filePath, avatarFile, { upsert: true });
 
-        if (!uploadError) {
+        if (uploadError) {
+          console.error('Upload fout:', uploadError.message);
+        } else {
           const { data: publicURLData } = client.storage
             .from('avatars')
             .getPublicUrl(filePath);
