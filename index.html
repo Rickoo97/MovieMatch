@@ -6,7 +6,7 @@
   <title>MovieMatch</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gradient-to-b from-black to-gray-900 text-white font-sans min-h-screen">
+<body class="bg-black text-white font-sans min-h-screen">
 
   <!-- Navbar -->
   <nav class="sticky top-0 bg-black bg-opacity-80 border-b border-gray-700 p-4 flex justify-between items-center z-50">
@@ -18,17 +18,20 @@
     </div>
   </nav>
 
-  <!-- Landing -->
-  <main id="top" class="flex flex-col items-center justify-center text-center px-6 py-20 space-y-6">
-    <h1 class="text-4xl sm:text-5xl font-extrabold text-red-600 leading-tight">Welkom bij MovieMatch</h1>
-    <p class="text-lg sm:text-xl max-w-xl text-gray-200">Kies jouw favoriete genres en ontvang filmsuggesties die echt bij je passen.</p>
-    <button class="bg-red-600 hover:bg-red-700 transition px-8 py-3 rounded-lg text-lg font-semibold shadow-md hover:scale-105" onclick="window.location.href='genres.html'">
-      Start
-    </button>
-  </main>
+  <!-- Hero met achtergrondafbeelding -->
+  <section id="top" class="relative h-[70vh] flex items-center justify-center overflow-hidden">
+    <img src="/mnt/images/movie.jpg" alt="Hero achtergrond" class="absolute inset-0 w-full h-full object-cover blur-sm brightness-75 z-0" />
+    <div class="relative z-10 text-center px-6 space-y-6">
+      <h1 id="welcomeTitle" class="text-4xl sm:text-5xl font-extrabold text-red-500 leading-tight drop-shadow-md">Welkom bij MovieMatch</h1>
+      <p class="text-lg sm:text-xl max-w-xl mx-auto text-gray-200">Kies jouw favoriete genres en ontvang filmsuggesties die echt bij je passen.</p>
+      <button class="bg-red-600 hover:bg-red-700 transition px-8 py-3 rounded-lg text-lg font-semibold shadow-md hover:scale-105" onclick="window.location.href='genres.html'">
+        Start
+      </button>
+    </div>
+  </section>
 
   <!-- Hoe werkt het -->
-  <section id="uitleg" class="max-w-6xl mx-auto px-6 py-16 bg-gray-900 rounded-xl shadow-inner space-y-10">
+  <section id="uitleg" class="max-w-6xl mx-auto px-6 py-16 bg-gray-900 rounded-xl shadow-inner space-y-10 mt-10">
     <h2 class="text-3xl font-bold text-red-500 text-center">Hoe werkt het?</h2>
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-8">
       <div class="bg-gray-800 rounded-2xl p-6 shadow-md text-center space-y-2">
@@ -56,12 +59,22 @@
 
     const userStatus = document.getElementById('userStatus');
     const authBtn = document.getElementById('authBtn');
+    const welcomeTitle = document.getElementById('welcomeTitle');
 
     async function updateAuthUI() {
       const { data: { user } } = await client.auth.getUser();
       if (user) {
-        userStatus.textContent = `${user.email}`;
+        const { data: profile } = await client
+          .from('profiles')
+          .select('username')
+          .eq('id', user.id)
+          .single();
+
+        const naam = profile?.username || user.email;
+        userStatus.textContent = naam;
         userStatus.onclick = () => window.location.href = 'profile.html';
+        welcomeTitle.textContent = `Welkom ${naam}`;
+
         authBtn.textContent = 'Uitloggen';
         authBtn.classList.remove('hidden');
         authBtn.onclick = async () => {
@@ -70,6 +83,7 @@
         };
       } else {
         userStatus.textContent = '';
+        welcomeTitle.textContent = 'Welkom bij MovieMatch';
         authBtn.textContent = 'Inloggen';
         authBtn.classList.remove('hidden');
         authBtn.onclick = () => window.location.href = 'login.html';
