@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MovieMatch</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/@supabase/supabase-js"></script>
 </head>
 <body class="bg-black text-white font-sans min-h-screen flex flex-col">
 
@@ -50,53 +49,52 @@
     </div>
   </section>
 
+<!-- Supabase en Auth script -->
+<script src="https://unpkg.com/@supabase/supabase-js"></script>
+<script>
+  const supabase = supabase.createClient(
+    'https://kumewugdgmgmqilniefd.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1bWV3dWdkZ21nbXFpbG5pZWZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY2MTI5NTMsImV4cCI6MjA2MjE4ODk1M30.dZgYY6kzf6JODAU5TG-bhYOkIZTSyM2XYV7LBNE5VEI'
+  );
+
+  const userStatus = document.getElementById('userStatus');
+  const authBtn = document.getElementById('authBtn');
+  const welcomeTitle = document.getElementById('welcomeTitle');
+
+  async function updateAuthUI() {
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (user) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('username')
+        .eq('id', user.id)
+        .single();
+
+      const naam = profile?.username || user.email;
+      userStatus.textContent = naam;
+      userStatus.onclick = () => window.location.href = 'profile.html';
+      welcomeTitle.textContent = `Welkom ${naam}`;
+      authBtn.textContent = 'Uitloggen';
+      authBtn.classList.remove('hidden');
+      authBtn.onclick = async () => {
+        await supabase.auth.signOut();
+        location.reload();
+      };
+    } else {
+      userStatus.textContent = '';
+      welcomeTitle.textContent = 'Welkom bij MovieMatch';
+      authBtn.textContent = 'Inloggen';
+      authBtn.classList.remove('hidden');
+      authBtn.onclick = () => window.location.href = 'login.html';
+    }
+  }
+
+  updateAuthUI();
+</script>
   <!-- Footer -->
   <footer class="bg-gray-950 text-gray-400 text-sm text-center py-6 border-t border-gray-800 mt-auto">
     <p>&copy; 2025 MovieMatch. Gemaakt met ❤️ voor filmfans.</p>
   </footer>
-
-  <!-- Supabase Auth script -->
-  <script>
-    const supabase = supabase.createClient(
-      'https://kumewugdgmgmqilniefd.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1bWV3dWdkZ21nbXFpbG5pZWZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY2MTI5NTMsImV4cCI6MjA2MjE4ODk1M30.dZgYY6kzf6JODAU5TG-bhYOkIZTSyM2XYV7LBNE5VEI'
-    );
-
-    const userStatus = document.getElementById('userStatus');
-    const authBtn = document.getElementById('authBtn');
-    const welcomeTitle = document.getElementById('welcomeTitle');
-
-    async function updateAuthUI() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('username')
-          .eq('id', user.id)
-          .single();
-
-        const naam = profile?.username || user.email;
-        userStatus.textContent = naam;
-        userStatus.onclick = () => window.location.href = 'profile.html';
-        welcomeTitle.textContent = `Welkom ${naam}`;
-
-        authBtn.textContent = 'Uitloggen';
-        authBtn.classList.remove('hidden');
-        authBtn.onclick = async () => {
-          await supabase.auth.signOut();
-          location.reload();
-        };
-      } else {
-        userStatus.textContent = '';
-        welcomeTitle.textContent = 'Welkom bij MovieMatch';
-        authBtn.textContent = 'Inloggen';
-        authBtn.classList.remove('hidden');
-        authBtn.onclick = () => window.location.href = 'login.html';
-      }
-    }
-
-    updateAuthUI();
-  </script>
-
 </body>
 </html>
