@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Filmsuggesties - MovieMatch</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@supabase/supabase-js"></script>
 </head>
 <body class="bg-gradient-to-b from-black to-gray-900 text-white font-sans min-h-screen">
 
@@ -31,6 +32,11 @@
   </div>
 
   <script>
+    const client = supabase.createClient(
+      'https://kumewugdgmgmqilniefd.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1bWV3dWdkZ21nbXFpbG5pZWZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY2MTI5NTMsImV4cCI6MjA2MjE4ODk1M30.dZgYY6kzf6JODAU5TG-bhYOkIZTSyM2XYV7LBNE5VEI'
+    );
+
     const geselecteerdeGenres = JSON.parse(localStorage.getItem("geselecteerdeGenres")) || [];
     const filmsContainer = document.getElementById("films");
     const trailerModal = document.getElementById("trailerModal");
@@ -70,7 +76,8 @@
           ${poster}
           <h3 class="text-xl font-semibold mb-2 text-red-400">${film.title}</h3>
           <p class="text-sm mb-2 text-gray-300">${film.overview || "Geen beschrijving beschikbaar."}</p>
-          <p class="text-sm text-gray-400"><strong>Beschikbaar op:</strong> ${streamInfo}</p>
+          <p class="text-sm text-gray-400 mb-2"><strong>Beschikbaar op:</strong> ${streamInfo}</p>
+          <button class="mt-auto bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded text-sm" onclick='slaFilmOp(${JSON.stringify(film)})'>❤️ Opslaan</button>
         `;
 
         filmsContainer.appendChild(div);
@@ -83,6 +90,29 @@
         trailerModal.classList.remove("hidden");
       } else {
         alert("Geen trailer beschikbaar.");
+      }
+    }
+
+    async function slaFilmOp(film) {
+      const { data: { user } } = await client.auth.getUser();
+      if (!user) {
+        alert("Je moet ingelogd zijn om films op te slaan.");
+        return;
+      }
+
+      const { error } = await client.from('saved_movies').insert({
+        user_id: user.id,
+        movie_id: film.id,
+        title: film.title,
+        poster_path: film.poster_path,
+        overview: film.overview
+      });
+
+      if (error) {
+        console.error('Fout bij opslaan:', error.message);
+        alert("Opslaan mislukt.");
+      } else {
+        alert("Film opgeslagen!");
       }
     }
 
