@@ -83,7 +83,7 @@
         authBtn.textContent = 'Uitloggen';
         authBtn.classList.remove('hidden');
         authBtn.onclick = async () => {
-          await supabase.auth.signOut();
+          await client.auth.signOut();
           location.reload();
         };
       } else {
