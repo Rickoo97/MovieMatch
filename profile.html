@@ -7,7 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/@supabase/supabase-js"></script>
 </head>
-<body class="bg-gradient-to-b from-black to-gray-900 text-white font-sans min-h-screen">
+<body class="bg-gradient-to-b from-black to-gray-900 text-white font-sans min-h-screen flex flex-col">
 
   <a href="index.html" class="text-red-500 hover:underline text-sm m-4 inline-block">← Terug naar startpagina</a>
 
@@ -29,10 +29,14 @@
     <p id="feedback" class="text-green-400 text-center mt-4"></p>
   </div>
 
-  <div class="max-w-4xl mx-auto mt-12 px-6">
+  <div class="max-w-4xl mx-auto mt-12 px-6 mb-20">
     <h2 class="text-2xl font-bold text-red-500 mb-4">Opgeslagen films</h2>
     <div id="savedMovies" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
   </div>
+
+  <footer class="bg-gray-950 text-gray-400 text-sm text-center py-6 border-t border-gray-800 mt-auto">
+    <p>&copy; 2025 MovieMatch. Gemaakt met ❤️ voor filmfans.</p>
+  </footer>
 
   <script>
     const client = supabase.createClient(
@@ -103,7 +107,7 @@
             <img src="https://image.tmdb.org/t/p/w300${film.poster_path}" class="rounded mb-2 aspect-[2/3] object-cover" alt="Poster">
             <h3 class="text-lg text-red-400 font-semibold">${film.title}</h3>
             <p class="text-sm text-gray-300 line-clamp-3">${film.overview || 'Geen beschrijving.'}</p>
-            <button class="mt-3 bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm text-white" onclick="verwijderFilm('${film.id}')">🗑️ Verwijder</button>
+            <button class="mt-3 bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm text-white" onclick="verwijderFilm('${film.movie_id}')">🗑️ Verwijder</button>
           `;
           savedMovies.appendChild(card);
         });
