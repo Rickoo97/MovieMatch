@@ -68,9 +68,14 @@
         welcomeMessage.textContent = data.username
           ? `Welkom ${data.username}!`
           : 'Welkom op je profiel';
+
         if (data.avatar_url) {
+          console.log('Laden van avatar_url:', data.avatar_url);
           preview.src = data.avatar_url;
           preview.classList.remove('hidden');
+        } else {
+          preview.src = '';
+          preview.classList.add('hidden');
         }
       }
     }
@@ -95,6 +100,7 @@
             .from('avatars')
             .getPublicUrl(filePath);
           avatar_url = publicURLData.publicUrl;
+          console.log('Opgeslagen avatar_url:', avatar_url);
         }
       }
 
