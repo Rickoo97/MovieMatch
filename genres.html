@@ -1,63 +1,80 @@
-<!-- genres.html -->
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-  <meta charset="UTF-8" />
-  <title>Kies je genres</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kies Genres - MovieMatch</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-black text-white min-h-screen font-sans">
+<body class="bg-gradient-to-b from-black to-gray-900 text-white font-sans min-h-screen">
 
-  <nav class="sticky top-0 bg-black border-b border-gray-700 p-4 flex justify-start items-center z-50">
-    <a href="index.html" class="text-red-600 hover:underline text-sm sm:text-base font-semibold">← Terug naar startpagina</a>
+  <!-- Navbar -->
+  <nav class="sticky top-0 bg-black bg-opacity-80 border-b border-gray-700 p-4 flex justify-between items-center z-50">
+    <a href="index.html" class="text-red-500 hover:underline text-sm font-semibold">← Terug naar startpagina</a>
   </nav>
 
-  <main class="max-w-4xl mx-auto mt-10 px-4 sm:px-6 text-center">
-    <h1 class="text-3xl sm:text-4xl font-extrabold mb-6 text-red-600">Kies 1 tot 3 genres</h1>
-    <div id="genres" class="flex flex-wrap justify-center gap-4 mb-8"></div>
-    <button id="zoekBtn" disabled
-            class="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700 transition disabled:opacity-50 font-semibold">
+  <!-- Genre selectie -->
+  <main class="max-w-4xl mx-auto px-6 py-16 text-center space-y-8">
+    <h1 class="text-3xl sm:text-4xl font-extrabold text-red-500">Kies je favoriete genres</h1>
+    <p class="text-gray-300">Selecteer 1 tot 3 genres die jij leuk vindt. We gebruiken deze om je films aan te raden!</p>
+
+    <form id="genreForm" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 text-left justify-center">
+      <!-- Dynamisch gegenereerde genre-checkboxen -->
+    </form>
+
+    <button id="zoekBtn" class="mt-8 bg-red-600 hover:bg-red-700 px-6 py-3 rounded-lg text-white font-semibold transition shadow hover:scale-105 disabled:opacity-50" disabled>
       Zoek wat films uit voor mij
     </button>
   </main>
 
   <script>
-    const apiKey = "4b06a3c9e64051404e6def4268bcf905"; // vervang dit met jouw TMDB API key
-    const geselecteerdeGenres = new Set();
-    const container = document.getElementById("genres");
+    const genreForm = document.getElementById("genreForm");
     const zoekBtn = document.getElementById("zoekBtn");
 
-    async function laadGenres() {
-      const res = await fetch(`https://api.themoviedb.org/3/genre/movie/list?api_key=${apiKey}&language=nl-NL`);
-      const data = await res.json();
+    let geselecteerdeGenres = [];
 
-      data.genres.forEach(genre => {
-        const btn = document.createElement("button");
-        btn.textContent = genre.name;
-        btn.className = "px-4 py-2 border border-gray-600 rounded bg-gray-800 hover:bg-red-600 transition text-sm sm:text-base text-white";
-        btn.onclick = () => {
-          if (geselecteerdeGenres.has(genre.id)) {
-            geselecteerdeGenres.delete(genre.id);
-            btn.classList.remove("bg-red-500");
-            btn.classList.add("bg-gray-800");
-          } else if (geselecteerdeGenres.size < 3) {
-            geselecteerdeGenres.add(genre.id);
-            btn.classList.remove("bg-gray-800");
-            btn.classList.add("bg-red-500");
+    async function haalGenresOp() {
+      const response = await fetch('https://api.themoviedb.org/3/genre/movie/list?api_key=4b06a3c9e64051404e6def4268bcf905&language=nl-NL');
+      const data = await response.json();
+      const genres = data.genres;
+
+      genres.forEach(genre => {
+        const label = document.createElement('label');
+        label.className = "bg-gray-800 p-3 rounded-lg cursor-pointer flex items-center gap-2 hover:bg-gray-700 transition";
+        const checkbox = document.createElement('input');
+        checkbox.type = "checkbox";
+        checkbox.value = genre.id;
+        checkbox.className = "accent-red-600 w-4 h-4";
+
+        checkbox.addEventListener('change', () => {
+          if (checkbox.checked) {
+            geselecteerdeGenres.push(genre.id);
+          } else {
+            geselecteerdeGenres = geselecteerdeGenres.filter(id => id !== genre.id);
           }
-          zoekBtn.disabled = geselecteerdeGenres.size === 0;
-        };
-        container.appendChild(btn);
+
+          // Max 3 genres selecteren
+          if (geselecteerdeGenres.length > 3) {
+            checkbox.checked = false;
+            geselecteerdeGenres = geselecteerdeGenres.filter(id => id !== genre.id);
+            alert("Je kunt maximaal 3 genres selecteren.");
+          }
+
+          zoekBtn.disabled = geselecteerdeGenres.length < 1;
+        });
+
+        label.appendChild(checkbox);
+        label.append(` ${genre.name}`);
+        genreForm.appendChild(label);
       });
     }
 
-    zoekBtn.onclick = () => {
-      const genreIds = Array.from(geselecteerdeGenres);
-      localStorage.setItem("geselecteerdeGenres", JSON.stringify(genreIds));
+    zoekBtn.addEventListener("click", () => {
+      localStorage.setItem("geselecteerdeGenres", JSON.stringify(geselecteerdeGenres));
       window.location.href = "films.html";
-    };
+    });
 
-    laadGenres();
+    haalGenresOp();
   </script>
 </body>
 </html>

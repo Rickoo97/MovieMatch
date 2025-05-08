@@ -1,40 +1,32 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-  <meta charset="UTF-8" />
-  <title>Filmsuggesties</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Filmsuggesties - MovieMatch</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    .fade-in {
-      animation: fadeIn 0.4s ease-in-out;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-  </style>
 </head>
-<body class="bg-black text-white min-h-screen font-sans">
+<body class="bg-gradient-to-b from-black to-gray-900 text-white font-sans min-h-screen">
 
-  <!-- Sticky Navbar -->
-  <nav class="sticky top-0 bg-black border-b border-gray-700 p-4 flex justify-start items-center z-50">
-    <a href="index.html" class="text-red-600 hover:underline text-sm sm:text-base font-semibold">← Terug naar startpagina</a>
+  <!-- Navbar -->
+  <nav class="sticky top-0 bg-black bg-opacity-80 border-b border-gray-700 p-4 flex justify-between items-center z-50">
+    <a href="index.html" class="text-red-500 hover:underline text-sm font-semibold">← Terug naar startpagina</a>
   </nav>
 
   <main class="max-w-6xl mx-auto p-6">
-    <h1 class="text-3xl font-extrabold text-center mb-6 text-red-500">Filmsuggesties</h1>
-    <button id="shuffleBtn" class="block mx-auto mb-8 bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700 transition font-semibold">
+    <h1 class="text-3xl sm:text-4xl font-extrabold text-center mb-8 text-red-500">Filmsuggesties</h1>
+    <button id="shuffleBtn" class="block mx-auto mb-10 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg transition font-semibold shadow hover:scale-105">
       Toon andere films
     </button>
-    <div id="films" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"></div>
+    <div id="films" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
   </main>
 
   <!-- Modal voor trailer -->
-  <div id="trailerModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 hidden fade-in">
+  <div id="trailerModal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden">
     <div class="bg-gray-900 rounded-lg max-w-3xl w-full p-4 relative">
-      <button onclick="document.getElementById('trailerModal').classList.add('hidden');document.getElementById('trailerFrame').src = '';" 
+      <button onclick="document.getElementById('trailerModal').classList.add('hidden');document.getElementById('trailerFrame').src = '';"
               class="absolute top-2 right-2 text-gray-400 hover:text-white text-xl">&times;</button>
-      <iframe id="trailerFrame" class="w-full aspect-video" frameborder="0" allowfullscreen></iframe>
+      <iframe id="trailerFrame" class="w-full aspect-video rounded-lg" frameborder="0" allowfullscreen></iframe>
     </div>
   </div>
 
@@ -43,50 +35,48 @@
     const filmsContainer = document.getElementById("films");
     const trailerModal = document.getElementById("trailerModal");
     const trailerFrame = document.getElementById("trailerFrame");
-  
+
     async function haalStreamPlatformsOp(filmId) {
       const response = await fetch(`/api/get-streams?id=${filmId}`);
       const data = await response.json();
       return data.platforms;
     }
-  
+
     async function haalTrailerUrl(filmId) {
       const response = await fetch(`/api/get-trailer?id=${filmId}`);
       const data = await response.json();
       return data.url;
     }
-  
+
     async function haalFilmsOp() {
       filmsContainer.innerHTML = "";
-  
       const genreQuery = geselecteerdeGenres.join(",");
       const response = await fetch(`/api/get-movies?genres=${genreQuery}`);
       const data = await response.json();
-  
       const films = data.results.sort(() => 0.5 - Math.random()).slice(0, 3);
-  
+
       for (const film of films) {
         const streamInfo = await haalStreamPlatformsOp(film.id);
         const trailerUrl = await haalTrailerUrl(film.id);
-  
+
         const div = document.createElement("div");
-        div.className = "bg-gray-800 rounded-lg shadow-lg p-4 flex flex-col hover:shadow-xl transition";
-  
+        div.className = "bg-gray-800 rounded-2xl shadow-lg p-4 hover:shadow-xl transition flex flex-col";
+
         const poster = film.poster_path
-          ? `<img src="https://image.tmdb.org/t/p/w500${film.poster_path}" alt="${film.title}" class="rounded mb-4 cursor-pointer hover:brightness-110 transition" onclick="toonTrailer('${trailerUrl}')">`
-          : "<p>Geen afbeelding beschikbaar</p>";
-  
+          ? `<img src="https://image.tmdb.org/t/p/w500${film.poster_path}" alt="${film.title}" class="rounded mb-4 cursor-pointer hover:brightness-110 transition object-cover aspect-[2/3]" onclick="toonTrailer('${trailerUrl}')">`
+          : "<p class='text-center text-gray-400'>Geen afbeelding beschikbaar</p>";
+
         div.innerHTML = `
           ${poster}
           <h3 class="text-xl font-semibold mb-2 text-red-400">${film.title}</h3>
           <p class="text-sm mb-2 text-gray-300">${film.overview || "Geen beschrijving beschikbaar."}</p>
           <p class="text-sm text-gray-400"><strong>Beschikbaar op:</strong> ${streamInfo}</p>
         `;
-  
+
         filmsContainer.appendChild(div);
       }
     }
-  
+
     function toonTrailer(url) {
       if (url) {
         trailerFrame.src = url;
@@ -95,9 +85,9 @@
         alert("Geen trailer beschikbaar.");
       }
     }
-  
+
     document.getElementById("shuffleBtn").addEventListener("click", haalFilmsOp);
     haalFilmsOp();
-  </script>  
+  </script>
 </body>
 </html>

@@ -2,28 +2,29 @@
 <html lang="nl">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Profiel - MovieMatch</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/@supabase/supabase-js"></script>
 </head>
-<body class="bg-black text-white min-h-screen flex flex-col items-center justify-start pt-10 p-6">
+<body class="bg-gradient-to-b from-black to-gray-900 text-white font-sans min-h-screen">
 
-  <a href="index.html" class="text-red-500 hover:underline text-sm mb-6">← Terug naar startpagina</a>
+  <a href="index.html" class="text-red-500 hover:underline text-sm m-4 inline-block">← Terug naar startpagina</a>
 
-  <h1 id="welcomeMessage" class="text-2xl font-bold text-red-500 text-center mb-6">Welkom op je profiel</h1>
+  <h1 id="welcomeMessage" class="text-3xl font-extrabold text-red-500 text-center mt-4">Welkom op je profiel</h1>
 
-  <div class="bg-gray-900 p-8 rounded-lg shadow max-w-md w-full">
-    <h2 class="text-xl font-semibold mb-4 text-white text-center">Profielgegevens</h2>
+  <div class="bg-gray-900 p-8 rounded-xl shadow-lg max-w-md w-full mx-auto mt-6">
+    <h2 class="text-xl font-semibold mb-6 text-white text-center">Profielgegevens</h2>
     <form id="profileForm" class="space-y-4" enctype="multipart/form-data">
       <div class="flex justify-center">
-        <img id="preview" src="" alt="Profielfoto" class="w-24 h-24 rounded-full border border-gray-600 mb-2 hidden" />
+        <img id="preview" src="" alt="Profielfoto" class="w-24 h-24 object-cover rounded-full border border-gray-600 mb-4 hidden" />
       </div>
       <input type="text" id="username" placeholder="Gebruikersnaam" required class="w-full p-3 rounded bg-gray-800 text-white border border-gray-700">
       <input type="number" id="age" placeholder="Leeftijd" min="0" class="w-full p-3 rounded bg-gray-800 text-white border border-gray-700">
       <input type="text" id="favoriteMovie" placeholder="Favoriete film" class="w-full p-3 rounded bg-gray-800 text-white border border-gray-700">
       <textarea id="bio" placeholder="Vertel iets over jezelf..." class="w-full p-3 rounded bg-gray-800 text-white border border-gray-700"></textarea>
       <input type="file" id="avatar" accept="image/*" class="w-full p-3 rounded bg-gray-800 text-white border border-gray-700">
-      <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded">Profiel opslaan</button>
+      <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded transition hover:scale-105">Profiel opslaan</button>
     </form>
     <p id="feedback" class="text-green-400 text-center mt-4"></p>
   </div>

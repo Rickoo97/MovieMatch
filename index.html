@@ -1,112 +1,82 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="nl">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MovieMatch</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/@supabase/supabase-js"></script>
 </head>
-<body class="bg-black text-white min-h-screen font-sans">
+<body class="bg-gradient-to-b from-black to-gray-900 text-white font-sans min-h-screen">
 
-  <!-- Sticky Navbar -->
-  <nav class="sticky top-0 bg-black border-b border-gray-700 p-4 flex justify-between items-center z-50">
-    <a href="#top" class="text-xl sm:text-2xl font-bold text-red-600">MovieMatch</a>
-    <div class="flex items-center gap-4">
-      <a href="#uitleg" class="text-sm sm:text-base text-red-500 hover:underline">Hoe werkt het</a>
-      <a href="profile.html" id="profileLink" class="flex items-center gap-2 hidden">
-        <img id="navAvatar" src="" alt="Profielfoto" class="w-8 h-8 rounded-full hidden">
-        <span id="navUsername" class="text-sm sm:text-base text-red-400 hover:underline"></span>
-      </a>
-      <button id="authBtn" class="text-red-400 hover:underline text-sm" style="display: none;"></button>
+  <!-- Navbar -->
+  <nav class="sticky top-0 bg-black bg-opacity-80 border-b border-gray-700 p-4 flex justify-between items-center z-50">
+    <a href="#top" class="text-2xl font-extrabold text-red-500 tracking-wide">MovieMatch</a>
+    <div class="flex gap-4 items-center">
+      <a href="#uitleg" class="text-red-400 hover:underline text-sm">Hoe werkt het</a>
+      <span id="userStatus" class="text-sm text-gray-300"></span>
+      <button id="authBtn" class="text-red-400 hover:underline text-sm hidden"></button>
     </div>
   </nav>
 
-  <!-- Startpagina inhoud -->
-  <main id="top" class="text-center mt-20 px-4 sm:px-6 md:px-10 flex flex-col items-center">
-    <h1 id="welcomeText" class="text-4xl font-extrabold mb-4 text-red-600">Welkom bij MovieMatch!</h1>
-    <p class="text-lg mb-6 max-w-xl text-white">Kies jouw favoriete genres en krijg filmsuggesties die bij jou passen!</p>
-    <button class="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700 transition font-semibold"
-            onclick="window.location.href='genres.html'">
+  <!-- Landing -->
+  <main id="top" class="flex flex-col items-center justify-center text-center px-6 py-20 space-y-6">
+    <h1 class="text-4xl sm:text-5xl font-extrabold text-red-600 leading-tight">Welkom bij MovieMatch</h1>
+    <p class="text-lg sm:text-xl max-w-xl text-gray-200">Kies jouw favoriete genres en ontvang filmsuggesties die echt bij je passen.</p>
+    <button class="bg-red-600 hover:bg-red-700 transition px-8 py-3 rounded-lg text-lg font-semibold shadow-md hover:scale-105" onclick="window.location.href='genres.html'">
       Start
     </button>
   </main>
 
-  <!-- Hoe werkt het sectie -->
-  <section id="uitleg" class="mt-32 px-4 sm:px-6 md:px-10 py-10 bg-gray-900 shadow-inner max-w-6xl mx-auto rounded-lg">
-    <h2 class="text-2xl font-semibold mb-6 text-red-500 text-center">Hoe werkt het?</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div class="bg-gray-800 p-6 rounded-lg shadow text-center">
-        <h3 class="text-lg font-bold text-red-400 mb-2">Stap 1</h3>
-        <p class="text-gray-300">Klik op de startknop om te beginnen met zoeken naar een leuke film.</p>
+  <!-- Hoe werkt het -->
+  <section id="uitleg" class="max-w-6xl mx-auto px-6 py-16 bg-gray-900 rounded-xl shadow-inner space-y-10">
+    <h2 class="text-3xl font-bold text-red-500 text-center">Hoe werkt het?</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-8">
+      <div class="bg-gray-800 rounded-2xl p-6 shadow-md text-center space-y-2">
+        <h3 class="text-lg font-semibold text-red-400">Stap 1</h3>
+        <p class="text-gray-300">Klik op de startknop om te beginnen met het vinden van een leuke film.</p>
       </div>
-      <div class="bg-gray-800 p-6 rounded-lg shadow text-center">
-        <h3 class="text-lg font-bold text-red-400 mb-2">Stap 2</h3>
+      <div class="bg-gray-800 rounded-2xl p-6 shadow-md text-center space-y-2">
+        <h3 class="text-lg font-semibold text-red-400">Stap 2</h3>
         <p class="text-gray-300">Kies één tot drie genres die jij leuk vindt en klik op 'Zoek films'.</p>
       </div>
-      <div class="bg-gray-800 p-6 rounded-lg shadow text-center">
-        <h3 class="text-lg font-bold text-red-400 mb-2">Stap 3</h3>
+      <div class="bg-gray-800 rounded-2xl p-6 shadow-md text-center space-y-2">
+        <h3 class="text-lg font-semibold text-red-400">Stap 3</h3>
         <p class="text-gray-300">Wij zoeken automatisch drie films die passen bij jouw smaak. Veel kijkplezier!</p>
       </div>
     </div>
   </section>
 
+  <!-- Supabase Auth script -->
+  <script src="https://unpkg.com/@supabase/supabase-js"></script>
   <script>
-    const client = supabase.createClient(
+    const supabase = supabase.createClient(
       'https://kumewugdgmgmqilniefd.supabase.co',
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1bWV3dWdkZ21nbXFpbG5pZWZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY2MTI5NTMsImV4cCI6MjA2MjE4ODk1M30.dZgYY6kzf6JODAU5TG-bhYOkIZTSyM2XYV7LBNE5VEI'
     );
 
+    const userStatus = document.getElementById('userStatus');
     const authBtn = document.getElementById('authBtn');
-    const profileLink = document.getElementById('profileLink');
-    const navUsername = document.getElementById('navUsername');
-    const navAvatar = document.getElementById('navAvatar');
-    const welcomeText = document.getElementById('welcomeText');
 
     async function updateAuthUI() {
-      const { data: { user }, error } = await client.auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        const { data: profiel } = await client
-          .from('profiles')
-          .select('username, avatar_url')
-          .eq('id', user.id)
-          .single();
-
-        profileLink.classList.remove('hidden');
+        userStatus.textContent = `Ingelogd als ${user.email}`;
         authBtn.textContent = 'Uitloggen';
-        authBtn.style.display = 'inline-block';
+        authBtn.classList.remove('hidden');
         authBtn.onclick = async () => {
-          await client.auth.signOut();
+          await supabase.auth.signOut();
           location.reload();
         };
-
-        if (profiel?.username) {
-          navUsername.textContent = profiel.username;
-        } else {
-          navUsername.textContent = 'Profiel';
-        }
-
-        if (profiel?.avatar_url) {
-          navAvatar.src = profiel.avatar_url;
-          navAvatar.classList.remove('hidden');
-        } else {
-          navAvatar.classList.add('hidden');
-        }
-
-        welcomeText.textContent = profiel?.username
-          ? `Welkom ${profiel.username}!`
-          : 'Welkom bij MovieMatch!';
       } else {
+        userStatus.textContent = '';
         authBtn.textContent = 'Inloggen';
-        authBtn.style.display = 'inline-block';
-        profileLink.classList.add('hidden');
-        navUsername.textContent = '';
-        navAvatar.classList.add('hidden');
+        authBtn.classList.remove('hidden');
         authBtn.onclick = () => window.location.href = 'login.html';
       }
     }
 
     updateAuthUI();
   </script>
+
 </body>
 </html>
