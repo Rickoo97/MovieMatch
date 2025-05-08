@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MovieMatch</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@supabase/supabase-js"></script>
 </head>
 <body class="bg-black text-white font-sans min-h-screen flex flex-col">
 
@@ -55,7 +56,6 @@
   </footer>
 
   <!-- Supabase Auth script -->
-  <script src="https://unpkg.com/@supabase/supabase-js"></script>
   <script>
     const supabase = supabase.createClient(
       'https://kumewugdgmgmqilniefd.supabase.co',
