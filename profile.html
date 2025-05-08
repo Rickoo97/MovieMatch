@@ -29,6 +29,11 @@
     <p id="feedback" class="text-green-400 text-center mt-4"></p>
   </div>
 
+  <div class="max-w-4xl mx-auto mt-12 px-6">
+    <h2 class="text-2xl font-bold text-red-500 mb-4">Opgeslagen films</h2>
+    <div id="savedMovies" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
+  </div>
+
   <script>
     const client = supabase.createClient(
       'https://kumewugdgmgmqilniefd.supabase.co',
@@ -43,6 +48,7 @@
     const preview = document.getElementById('preview');
     const feedback = document.getElementById('feedback');
     const welcomeMessage = document.getElementById('welcomeMessage');
+    const savedMovies = document.getElementById('savedMovies');
 
     let currentUser;
 
@@ -71,13 +77,43 @@
           : 'Welkom op je profiel';
 
         if (data.avatar_url) {
-          console.log('Laden van avatar_url:', data.avatar_url);
           preview.src = data.avatar_url;
           preview.classList.remove('hidden');
         } else {
           preview.src = '';
           preview.classList.add('hidden');
         }
+      }
+
+      laadOpgeslagenFilms();
+    }
+
+    async function laadOpgeslagenFilms() {
+      const { data, error } = await client
+        .from('saved_movies')
+        .select('*')
+        .eq('user_id', currentUser.id);
+
+      if (data) {
+        savedMovies.innerHTML = '';
+        data.forEach(film => {
+          const card = document.createElement('div');
+          card.className = 'bg-gray-800 p-4 rounded shadow flex flex-col';
+          card.innerHTML = `
+            <img src="https://image.tmdb.org/t/p/w300${film.poster_path}" class="rounded mb-2 aspect-[2/3] object-cover" alt="Poster">
+            <h3 class="text-lg text-red-400 font-semibold">${film.title}</h3>
+            <p class="text-sm text-gray-300 line-clamp-3">${film.overview || 'Geen beschrijving.'}</p>
+            <button class="mt-3 bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm text-white" onclick="verwijderFilm('${film.id}')">🗑️ Verwijder</button>
+          `;
+          savedMovies.appendChild(card);
+        });
+      }
+    }
+
+    async function verwijderFilm(id) {
+      const { error } = await client.from('saved_movies').delete().eq('id', id);
+      if (!error) {
+        laadOpgeslagenFilms();
       }
     }
 
@@ -101,7 +137,6 @@
             .from('avatars')
             .getPublicUrl(filePath);
           avatar_url = publicURLData.publicUrl;
-          console.log('Opgeslagen avatar_url:', avatar_url);
         }
       }
 
